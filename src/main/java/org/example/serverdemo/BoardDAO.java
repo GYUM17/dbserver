@@ -11,13 +11,13 @@ public class BoardDAO {
     private static final String UPDATE = "UPDATE board SET title=?, content=? WHERE seq=?";
     private static final String DELETE = "DELETE FROM board WHERE seq=?";
 
-    public void insertBoard(BoardVO vo) {
+    public int insertBoard(BoardVO vo) {
         try (Connection conn = JDBCUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(INSERT)) {
             ps.setString(1, vo.getTitle());
             ps.setString(2, vo.getWriter());
             ps.setString(3, vo.getContent());
-            ps.executeUpdate();
+            return ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("insertBoard 실패", e);
         }
