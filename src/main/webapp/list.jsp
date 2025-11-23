@@ -50,12 +50,12 @@
                             for (BoardVO b : boards) {
                     %>
                     <tr>
-                        <td><%= b.getSeq() %></td>
+                        <td><%= b.getId() %></td>
                         <td class="text-start"><%= b.getTitle() %></td>
                         <td><%= b.getWriter() %></td>
                         <td><%= b.getCnt() %></td>
                         <td><%= b.getRegDate() != null ? sdf.format(b.getRegDate()) : "" %></td>
-                        <td><a href="view.jsp?seq=<%= b.getSeq() %>" class="btn btn-outline-success btn-sm">보기</a></td>
+                        <td><a href="view.jsp?id=<%= b.getId() %>" class="btn btn-outline-success btn-sm">보기</a></td>
                     </tr>
                     <%
                             }

@@ -3,15 +3,15 @@ package org.example.serverdemo;
 import java.util.Date;
 
 public class BoardVO {
-    private int seq;
+    private int id;
     private String title;
     private String writer;
     private String content;
     private Date regDate;
     private int cnt;
 
-    public int getSeq() { return seq; }
-    public void setSeq(int seq) { this.seq = seq; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public String getWriter() { return writer; }

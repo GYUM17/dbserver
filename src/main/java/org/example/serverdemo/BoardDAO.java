@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BoardDAO {
-    private static final String INSERT = "INSERT INTO board(title, writer, content) VALUES(?,?,?)";
-    private static final String LIST = "SELECT seq, title, writer, content, regdate, cnt FROM board ORDER BY seq DESC";
-    private static final String GET = "SELECT seq, title, writer, content, regdate, cnt FROM board WHERE seq=?";
-    private static final String UPDATE = "UPDATE board SET title=?, content=? WHERE seq=?";
-    private static final String DELETE = "DELETE FROM board WHERE seq=?";
+    private static final String INSERT = "INSERT INTO BOARD(title, writer, content) VALUES(?,?,?)";
+    private static final String LIST = "SELECT id, title, writer, content, regdate, cnt FROM BOARD ORDER BY id DESC";
+    private static final String GET = "SELECT id, title, writer, content, regdate, cnt FROM BOARD WHERE id=?";
+    private static final String UPDATE = "UPDATE BOARD SET title=?, content=? WHERE id=?";
+    private static final String DELETE = "DELETE FROM BOARD WHERE id=?";
 
     public int insertBoard(BoardVO vo) {
         try (Connection conn = JDBCUtil.getConnection();
@@ -35,10 +35,10 @@ public class BoardDAO {
         return list;
     }
 
-    public BoardVO getBoard(int seq) {
+    public BoardVO getBoard(int id) {
         try (Connection conn = JDBCUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(GET)) {
-            ps.setInt(1, seq);
+            ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return mapRow(rs);
             }
@@ -53,17 +53,17 @@ public class BoardDAO {
              PreparedStatement ps = conn.prepareStatement(UPDATE)) {
             ps.setString(1, vo.getTitle());
             ps.setString(2, vo.getContent());
-            ps.setInt(3, vo.getSeq());
+            ps.setInt(3, vo.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("updateBoard 실패", e);
         }
     }
 
-    public void deleteBoard(int seq) {
+    public void deleteBoard(int id) {
         try (Connection conn = JDBCUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(DELETE)) {
-            ps.setInt(1, seq);
+            ps.setInt(1, id);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("deleteBoard 실패", e);
@@ -72,7 +72,7 @@ public class BoardDAO {
 
     private BoardVO mapRow(ResultSet rs) throws SQLException {
         BoardVO vo = new BoardVO();
-        vo.setSeq(rs.getInt("seq"));
+        vo.setId(rs.getInt("id"));
         vo.setTitle(rs.getString("title"));
         vo.setWriter(rs.getString("writer"));
         vo.setContent(rs.getString("content"));
