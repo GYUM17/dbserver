@@ -7,6 +7,8 @@ import java.util.List;
 public class BoardDAO {
     private static final String INSERT = "INSERT INTO BOARD(title, writer, content) VALUES(?,?,?)";
     private static final String LIST = "SELECT id, title, writer, content, regdate, cnt FROM BOARD ORDER BY id DESC";
+    private static final String LIST_SEARCH = "SELECT id, title, writer, content, regdate, cnt FROM BOARD " +
+            "WHERE title LIKE ? OR content LIKE ? OR writer LIKE ? ORDER BY id DESC";
     private static final String GET = "SELECT id, title, writer, content, regdate, cnt FROM BOARD WHERE id=?";
     private static final String UPDATE = "UPDATE BOARD SET title=?, content=? WHERE id=?";
     private static final String DELETE = "DELETE FROM BOARD WHERE id=?";
@@ -24,11 +26,24 @@ public class BoardDAO {
     }
 
     public List<BoardVO> getBoardList() {
+        return getBoardList(null);
+    }
+
+    public List<BoardVO> getBoardList(String keyword) {
         List<BoardVO> list = new ArrayList<>();
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        String sql = hasKeyword ? LIST_SEARCH : LIST;
         try (Connection conn = JDBCUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(LIST);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) list.add(mapRow(rs));
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (hasKeyword) {
+                String q = "%" + keyword.trim() + "%";
+                ps.setString(1, q);
+                ps.setString(2, q);
+                ps.setString(3, q);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("getBoardList 실패", e);
         }

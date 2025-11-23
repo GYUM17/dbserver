@@ -1,31 +1,37 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.example.serverdemo.BoardDAO,org.example.serverdemo.BoardVO,java.util.List,java.text.SimpleDateFormat" %>
 <%
+    request.setCharacterEncoding("UTF-8");
+    String q = request.getParameter("q");
     BoardDAO dao = new BoardDAO();
-    List<BoardVO> boards = dao.getBoardList();
+    List<BoardVO> boards = dao.getBoardList(q);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>게시판 목록</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body class="bg-light">
-<div class="container py-5">
+<jsp:include page="top.jsp" />
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+        <div>
+            <h1 class="h4 mb-1">게시판 목록</h1>
+            <div class="text-muted">총 게시글 수: <%= boards.size() %></div>
+        </div>
+        <a href="write.jsp" class="btn btn-primary">새 글 작성</a>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <form class="row g-2 align-items-center" method="get" action="list.jsp">
+                <div class="col-sm-8 col-md-6">
+                    <input type="text" class="form-control" name="q" placeholder="제목/내용/작성자 검색" value="<%= q != null ? q : "" %>">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-outline-primary">검색</button>
+                    <a href="list.jsp" class="btn btn-light">초기화</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm">
         <div class="card-body">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-                <div>
-                    <h1 class="h4 mb-1">게시판 목록</h1>
-                    <div class="text-muted">총 게시글 수: <%= boards.size() %></div>
-                </div>
-                <a href="write.jsp" class="btn btn-primary">새 글 작성</a>
-            </div>
-
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle text-center">
                     <thead class="table-light">
@@ -35,7 +41,7 @@
                         <th scope="col">작성자</th>
                         <th scope="col">조회수</th>
                         <th scope="col">작성일</th>
-                        <th scope="col">상세보기</th>
+                        <th scope="col">액션</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -51,11 +57,15 @@
                     %>
                     <tr>
                         <td><%= b.getId() %></td>
-                        <td class="text-start"><%= b.getTitle() %></td>
+                        <td class="text-start"><a href="view.jsp?id=<%= b.getId() %>" class="text-decoration-none"><%= b.getTitle() %></a></td>
                         <td><%= b.getWriter() %></td>
                         <td><%= b.getCnt() %></td>
                         <td><%= b.getRegDate() != null ? sdf.format(b.getRegDate()) : "" %></td>
-                        <td><a href="view.jsp?id=<%= b.getId() %>" class="btn btn-outline-success btn-sm">보기</a></td>
+                        <td class="d-flex justify-content-center gap-2">
+                            <a href="view.jsp?id=<%= b.getId() %>" class="btn btn-outline-success btn-sm">보기</a>
+                            <a href="edit.jsp?id=<%= b.getId() %>" class="btn btn-outline-primary btn-sm">수정</a>
+                            <a href="delete.jsp?id=<%= b.getId() %>" class="btn btn-outline-danger btn-sm" onclick="return confirm('삭제하시겠습니까?');">삭제</a>
+                        </td>
                     </tr>
                     <%
                             }
@@ -66,9 +76,4 @@
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-</body>
-</html>
+<jsp:include page="bottom.jsp" />
